@@ -6,16 +6,20 @@
 
 TelegramBot bot;
 Wifi wifi;
+bool isWifi = true;
 
 void setup() {
-    Serial.begin(115200);
-    wifi.init();
-    bot.init();
-
     pinMode(LED, OUTPUT);
+    Serial.begin(115200);
+    if(!wifi.init()){ 
+      isWifi = false;
+      wifi.host();
+    }
+    else bot.init();
 }
 
 void loop() {
+  if(isWifi){
     telMessage buffer = bot.getUpdates();
     
     for (int i = 0; i < buffer.length; i++) {
@@ -31,6 +35,6 @@ void loop() {
         }
       }
     }
-    
-    delay(2000);  
+  }
+  delay(2000);  
 }

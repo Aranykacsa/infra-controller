@@ -17,14 +17,13 @@ struct telMessage {
 
 class TelegramBot {
     public:
-        TelegramBot() : bot(TOKEN, client) {}
         void init();
         telMessage getUpdates();
         bool validate(telegramMessage message);
         void sendMessage(const String chatId, const String message);
     private:
         WiFiClientSecure client;
-        UniversalTelegramBot bot;        
+        UniversalTelegramBot* bot;        
         std::vector<String> users{"6418346641"};    
     };
 

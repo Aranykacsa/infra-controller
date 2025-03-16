@@ -2,20 +2,51 @@
 #include "Arduino.h"
 #include <WiFi.h>
 
-void Wifi::init() {
+bool Wifi::init() {
     WiFi.begin(MY_SSID, MY_PASS);
 
     int stopper = 0;
-    
-    while (WiFi.status() != WL_CONNECTED) {
-        if(stopper == 100) {
-            break;
-        }
 
-        stopper++;
+    while (WiFi.status() != WL_CONNECTED && stopper < 60) {  
         delay(1000);
+        stopper++;
     }
 
-    if (stopper == 100) Serial.println("Wifi not found"); // setup wifi
-    else Serial.println("Connected to WiFi");
+    if (WiFi.status() != WL_CONNECTED) {  
+        Serial.println("WiFi not found");
+        return false;
+    } else {
+        Serial.println("Connected to WiFi");
+        return true;
+    }
+}
+
+void Wifi::handleCmd() {
+    String response;
+
+    if(server.hasArg("ssid")) {
+        String ssid = server.arg("ssid");
+        response = "Received SSID: " + ssid;
+    } else if (server.hasArg("password")) {
+        String password = server.arg("password");
+        response = "Received password: " + password;
+    } else {
+        response = "No option was found";
+    }
+    server.send(200, "text/plain", response);
+}
+
+void Wifi::host() {
+    WiFi.softAP(HOST_SSID, HOST_PASS);
+
+    Serial.println("AP Started");
+    Serial.print("AP IP Address: ");
+    Serial.println(WiFi.softAPIP());
+
+    server.on("/set", [this]() { this->handleCmd(); }); 
+    server.begin();
+
+    while(1) {
+        server.handleClient();
+    }
 }
