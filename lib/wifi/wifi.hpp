@@ -3,9 +3,17 @@
 
 #include <WiFi.h>
 #include <WebServer.h>
+#include <Preferences.h>
 
-#define MY_SSID "Wi-Fi"
-#define MY_PASS "wwhctm989"
+struct Pref {
+    String ssid;
+    String pass;
+};
+
+//#define MY_SSID "Wi-Fi"
+#define MY_SSID "Affinity Workshop"
+//#define MY_PASS "wwhctm989"
+#define MY_PASS "AW37696009"
 #define HOST_SSID "CONTROLLER_WIFI"
 #define HOST_PASS "CONTROLLER_WIFI"
 
@@ -17,6 +25,10 @@ class Wifi {
     private:
         WebServer server;
         void handleCmd();
+        Pref getWifi();
+
+        Preferences wifiPreferences;
+        
 };
 
 #endif

@@ -3,7 +3,8 @@
 #include <WiFi.h>
 
 bool Wifi::init() {
-    WiFi.begin(MY_SSID, MY_PASS);
+    Pref buffer = this->getWifi();
+    WiFi.begin(buffer.ssid, buffer.pass);
 
     int stopper = 0;
 
@@ -27,10 +28,17 @@ void Wifi::handleCmd() {
     if(server.hasArg("ssid")) {
         String ssid = server.arg("ssid");
         response = "Received SSID: " + ssid;
+        wifiPreferences.putString("ssid", ssid);
     } else if (server.hasArg("password")) {
         String password = server.arg("password");
         response = "Received password: " + password;
-    } else {
+        wifiPreferences.putString("pass", password);
+    } else if (server.hasArg("restart")) {
+        wifiPreferences.end();
+        delay(1000);
+        ESP.restart();
+    }
+    else {
         response = "No option was found";
     }
     server.send(200, "text/plain", response);
@@ -49,4 +57,24 @@ void Wifi::host() {
     while(1) {
         server.handleClient();
     }
+}
+
+Pref Wifi::getWifi() {
+    Pref buffer;
+
+    wifiPreferences.begin("wifi", false);
+
+    if(wifiPreferences.isKey("ssid")) {
+        buffer.ssid = wifiPreferences.getString("ssid");
+    } else {
+        buffer.ssid = "Fallback";
+    }
+
+    if (wifiPreferences.isKey("pass")) {
+        buffer.pass = wifiPreferences.getString("pass");
+    } else {
+        buffer.pass = "Fallback";
+    }
+
+    return buffer;
 }
