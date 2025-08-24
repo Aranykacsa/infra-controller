@@ -7,8 +7,8 @@
 #include <vector>
 #include <string>
 
-#define TOKEN "7800435271:AAFaBm7b-QZIe1iDEkWKEnyNRtr2rkQ8v6M"
-#define CHAT_ID "6418346641"
+#define TOKEN ""
+#define CHAT_ID ""
 
 struct telMessage {
     int length;
